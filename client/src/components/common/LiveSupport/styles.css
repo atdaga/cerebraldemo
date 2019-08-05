@@ -1,0 +1,40 @@
+:local(.header) {
+  background-color: #CCCCCC;
+}
+
+.live-support-container {
+    width: 50%;
+    border-width: 1px;
+    border-color: #A9A9A9;
+    border-style: solid;
+    margin-top: 40px;
+}
+
+.supporter {
+  background-color: #A9A9A9;
+  padding: 10px 0 10px 0;
+  margin: 0 -16px 0 -16px;
+}
+
+.conversation-text {
+    overflow-y: auto;
+}
+
+.support-name {
+  font-weight: bold;
+}
+
+.patient-name {
+  font-weight: bold;
+  color: #6495ED;
+}
+
+.conversation-break {
+  font-size: 150%;
+}
+
+.input-container {
+  background-color: #A9A9A9;
+  padding: 10px 0 0 0;
+  margin: 0 -16px 0 -16px;
+}

@@ -1,0 +1,13 @@
+{
+  "presets": ["env"],
+  "plugins": [
+    "transform-class-properties"
+  ],
+  "env": {
+    "production": {
+      "comments": false,
+      "minified": true
+    }
+  }
+}
+

@@ -1,0 +1,32 @@
+{
+  "name": "rdb",
+  "version": "1.0.0",
+  "description": "Relational Database PostgreSQL Migration",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SkyloTechnologies/platform-rdb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SkyloTechnologies/platform-rdb/issues"
+  },
+  "homepage": "https://github.com/SkyloTechnologies/platform-rdb",
+  "author": "Anthony Daga <anthony@getcerebral.com>",
+  "license": "ISC",
+  "engines": {
+    "node": ">=8"
+  },
+  "scripts": {
+    "migrate:up": "cross-env PG_HOST=${PG_HOST:=localhost} PG_PORT=${PG_PORT:=5432} PG_DATABASE=${PG_DATABASE:=cerebral} PG_SCHEMA=${PG_SCHEMA:=public} PG_USERNAME=${PG_USERNAME} PG_PASSWORD=${PG_PASSWORD:=} db-migrate up -e bootstrap --migration-table c_schema -v",
+    "migrate:reset": "cross-env PG_HOST=${PG_HOST:=localhost} PG_PORT=${PG_PORT:=5432} PG_DATABASE=${PG_DATABASE:=cerebral} PG_SCHEMA=${PG_SCHEMA:=public} PG_USERNAME=${PG_USERNAME} PG_PASSWORD=${PG_PASSWORD:=} db-migrate reset -e bootstrap --migration-table c_schema -v",
+    "migrate:resetup": "npm run migrate:reset && npm run migrate:up",
+    "migrate:down": "cross-env PG_HOST=${PG_HOST:=localhost} PG_PORT=${PG_PORT:=5432} PG_DATABASE=${PG_DATABASE:=cerebral} PG_SCHEMA=${PG_SCHEMA:=public} PG_USERNAME=${PG_USERNAME} PG_PASSWORD=${PG_PASSWORD:=} db-migrate down -e bootstrap --migration-table c_schema -v",
+    "pristine": "shx rm -rf node_modules"
+  },
+  "dependencies": {
+    "cross-env": "^5.2.0",
+    "db-migrate": "^0.11.6",
+    "db-migrate-pg": "^0.4.0",
+    "shx": "^0.2.2"
+  }
+}
