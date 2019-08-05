@@ -1,0 +1,114 @@
+{
+  "name": "web-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web API",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/atdaga/web-server.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/atdaga/web-server/issues"
+  },
+  "homepage": "https://gitlab.com/atdaga/web-server",
+  "author": "Anthony Daga <anthony@getcerebral.com>",
+  "license": "ISC",
+  "engines": {
+    "node": ">=10"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": "eslint"
+  },
+  "jest": {
+    "verbose": true,
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/config/test.js",
+      "/src/__tests__/integration.*.js"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "html"
+    ]
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=local nodemon $NODE_DEBUG_OPTIONS src",
+    "lint": "eslint src",
+    "test": "jest --detectOpenHandles",
+    "test:authRoutes": "jest --runInBand --detectOpenHandles authRoutes",
+    "coverage": "jest --detectOpenHandles --collectCoverageFrom=src/**.js --coverage src",
+    "precommit": "lint-staged && npm test",
+    "clean": "shx rm -rf dist coverage doc",
+    "pristine": "npm run clean && shx rm -rf node_modules",
+    "build": "npm run clean && cross-env NODE_ENV=production babel -s true src -d dist",
+    "start:prod": "cross-env NODE_ENV=production node dist",
+    "doc:api:public": "redoc-cli bundle doc-template/cerebralApi.yaml && shx mkdir -p doc && shx sed 's/ReDoc documentation/Cerebral API/g' redoc-static.html > doc/cerebralApi.html && shx rm redoc-static.html",
+    "doc": "npm run doc:api:public"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^22.14.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.3",
+    "husky": "^3.0.2",
+    "jest": "^24.8.0",
+    "lint-staged": "^9.2.1",
+    "marked": "^0.7.0",
+    "nodemon": "^1.19.1",
+    "redoc-cli": "^0.8.6",
+    "shx": "^0.3.2",
+    "supertest": "^4.0.2"
+  },
+  "dependencies": {
+    "apollo-server": "^2.0.0",
+    "apollo-server-express": "^2.0.0",
+    "aws-sdk": "^2.503.0",
+    "axios": "^0.18.1",
+    "babel-register": "^6.26.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "chalk": "^2.4.2",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "cross-env": "^5.2.0",
+    "express": "^4.17.1",
+    "express-jwt": "^5.3.1",
+    "express-validation": "^1.0.2",
+    "express-winston": "^2.6.0",
+    "graphql": "^0.13.2",
+    "graphql-tools": "^3.1.1",
+    "helmet": "^3.20.0",
+    "http-status": "^1.3.2",
+    "joi": "^13.7.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^2.2.0",
+    "lodash": "^4.17.15",
+    "merge-graphql-schemas": "^1.5.3",
+    "moment": "^2.24.0",
+    "nested-error-stacks": "^2.1.0",
+    "node-uma": "^1.0.1",
+    "nodemailer": "^4.6.4",
+    "pg-promise": "^8.7.5",
+    "randomatic": "^3.1.1",
+    "redis": "^2.8.0",
+    "shortid": "^2.2.14",
+    "socket.io": "^2.2.0",
+    "socketio-jwt": "^4.5.0",
+    "socketio-wildcard": "^2.0.0",
+    "sqs-consumer": "^3.8.0",
+    "subscriptions-transport-ws": "^0.9.14",
+    "uuid": "^3.3.2",
+    "validator": "^10.11.0",
+    "winston": "^2.4.4"
+  }
+}

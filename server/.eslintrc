@@ -1,0 +1,34 @@
+{
+  "extends": [
+    "airbnb",
+    "plugin:jest/recommended"
+  ],
+  "parser": "babel-eslint",
+  "plugins": [
+    "import",
+    "jest"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest/globals": true
+  },
+  "rules": {
+     "indent": ["error", 2, {"SwitchCase": 1}],
+     "comma-dangle": [1, "only-multiline"],
+     "no-underscore-dangle" : 0,
+     "max-len": [1, 180, 4],
+     "arrow-body-style": [0],
+     "react/jsx-no-bind": [0],
+     "import/no-unresolved": [0], // Until import plugin supports webpack 2 resolveModules
+     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+     "function-paren-newline": ["error", "consistent"],
+     "object-curly-newline": ["error", {
+        "ObjectExpression": { "consistent": true },
+        "ObjectPattern": { "consistent": true },
+        "ImportDeclaration": { "consistent": true },
+        "ExportDeclaration": { "consistent": true }
+     }],
+     "react/forbid-prop-types": [0]
+  }
+}

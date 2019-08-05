@@ -1,0 +1,484 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Cerebral Public API
+  description: >-
+    Public API endpoints for questionaire, etc.
+  termsOfService: 'https://getcerebral.com/terms/'
+  contact:
+    name: Cerebral Support
+    url: 'https://getcerebral.com/support'
+    email: support@getcerebral.com
+  license:
+    name: Cerebral License 1.0
+    url: 'https://getcerebral.com/licenses/LICENSE-1.0.html'
+servers:
+  - url: 'https://getcerebral.com/api/{version}'
+    variables:
+      version:
+        enum:
+          - ''
+          - v1
+        default: ''
+        description: >-
+          This specifies the version of the API to use.  If not specified,
+          latest will be used.
+security:
+  - jwt: []
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate and retrieve a JWT used for authenticated requests.
+      description: >-
+        Retrieve a JWT, which is required to make subsequent authenticated
+        invocations to protected endpoints. The validity of the retrieved JWT is
+        1 hour, in which case you'll need to reauthenticate in order to retrieve
+        a valid JWT.
+      security: []
+      operationId: loginClient
+      requestBody:
+        description: Credentials provided for authentication.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Integration access key.
+                password:
+                  type: string
+                  description: Integration access secret key.
+            example:
+              "username": "YG2D3NZQ5OKLBTZTYHXW21MBVIC30UAK8RZHAWXF0"
+              "password": "Nl4&#7oqG@7#H%Zpfo+%''K3PBYPEwrvv}@Qr(9jYEwW"
+      responses:
+        '200':
+          description: JSON Web Token (JWT)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT
+              example:
+                "token": >-
+                  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzeXN0ZW1Sb2xlIjoic3lzdGVtVXNlciIsIm9yZ0lkIjoiNTc1NmMyZTktNGI4Ny00YjY3LTg0NDItYTgwYjIxZDhmODg1IiwiaWF0IjoxNTMxMTkxNjMxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJzdWIiOiJlODM0ZTBjMi0yMDVhLTRhYzUtOWU0Ny1mMjRlZjA1NmYyMmIiLCJqdGkiOiJjODEyYzBmZC00ZjM0LTQ4YTQtOWY2Yy1lZDNjMmI5OWU4MTEifQ.0U90-ZKa-k3RzEl8pMKd0be2CoG1tzwyAr2_NqFfKHU
+        '400':
+          description: Bad request, typically request body validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 400
+                message: 'Body validation error(s): "username" is required'
+                cId: ryL8vdaQQ
+        '401':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 401
+                message: Invalid credentials.
+                cId: ryK8c4aR2
+  /auth/logout:
+    get:
+      summary: Revoke a JWT token to prevent it's further use.
+      description: >-
+        Revoke a JWT token to prevent it's further use. This ensures that it
+        can't be compromised and used for malevolent purposes.
+      security: []
+      operationId: logoutClient
+      responses:
+        '204':
+          description: The logout was successful.
+  '/devices/history/ids/{ids}':
+    get:
+      summary: Retrieve device(s) historical data by device IDs.
+      description: 'Retrieve device(s) historical data.  This method is limited by the number of device IDs as imposed by the maximum URL length of 2000 characters.'
+      operationId: devicesHistoryGet
+      parameters:
+        - name: ids
+          in: path
+          required: true
+          description: A comma-separated list (no spaces) of device IDs.
+          schema:
+            type: object
+        - name: raw
+          in: query
+          description: >-
+            Include raw binary (hex) sensor data in the response. Valid values
+            are `true` and `false` (default).
+          schema:
+            type: boolean
+        - name: since
+          in: query
+          description: >-
+            The data returned are greater than or equal to this value, in RFC339
+            format normalized to UTC.
+          schema:
+            type: string
+            format: date-time
+            example: 2018-06-04T13:02:44.000Z
+        - name: until
+          in: query
+          description: >-
+            The data returned are less than or equal to this value, in RFC339 
+            format normalized to UTC.
+          schema:
+            type: string
+            format: date-time
+            example: 2018-06-04T13:02:44.000Z
+      responses:
+        '200':
+          description: Historical device data per device specified in the request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  devices:
+                    type: object
+                    properties:
+                      id:
+                        $ref: '#/components/schemas/DeviceDatas'
+              example:
+                devices:
+                  5ce86079-0025-4b57-85ca-efed02a1e16a:
+                    - eventTimestamp: 2018-06-08T15:47:31.000Z
+                      long: 67.933218
+                      lat: 23.114694
+                      raw: A3C492F8F3894AD
+                    - eventTimestamp: 2018-06-08T15:48:31.000Z
+                      long: 67.883719
+                      lat: 24.114694
+                      raw: A5D492E0F389BC4
+                  5ce86079-0025-4b57-85ca-efed02a1e16b:
+                    - eventTimestamp: 2018-06-08T15:47:31.000Z
+                      imu: data (TBD)
+                      raw: B56692C23389E0F
+                    - eventTimestamp: 2018-06-08T15:48:31.000Z
+                      imu: data (TBD)
+                      raw: B89492E0F0E4AD5
+        '400':
+          description: 'Bad request, typically bad syntax in parameter specification.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 400
+                message: Invalid value \"true\" for parameter \"raw\".
+                cId: ryK8c4aR2
+        '401':
+          description: The JWT token is not valid or expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 401
+                message: Invalid credentials.
+                cId: ryK8c4aR2
+        '404':
+          description: At least 1 of the specified deviceIds do not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                single:
+                  code: 404
+                  message: 'Body validation error(s): "1" must be a valid GUID'
+                  cId: ryL8vdaQQ
+                multiple:
+                  code: 404
+                  message: 'Body validation error(s): "0" must be a valid GUID and "1" must be a valid GUID and "deviceIds" does not contain 1 required value(s)''
+                cId: ryK8c4aR2
+  '/devices/history/ids':
+    post:
+      summary: Retrieve device(s) historical data by device IDs.
+      description: 'Retrieve device(s) historical data.'
+      operationId: devicesHistoryPost
+      requestBody:
+        description: List of device IDs.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceIds:
+                  type: array
+                  description: List of device IDs.
+                  items:
+                    type: string
+                    format: uuid
+                    minimum: 1
+                          
+            example:
+              deviceIds: [5ce86079-0025-4b57-85ca-efed02a1e16a, 5ce86079-0025-4b57-85ca-efed02a1e16b]
+      parameters:
+        - name: raw
+          in: query
+          description: >-
+            Include raw binary (hex) sensor data in the response. Valid values
+            are `true` and `false` (default).
+          schema:
+            type: boolean
+        - name: since
+          in: query
+          description: >-
+            The data returned are greater than or equal to this value, in RFC339
+            format normalized to UTC.
+          schema:
+            type: string
+            format: date-time
+          example: 2018-06-04T13:02:44.000Z
+        - name: until
+          in: query
+          description: >-
+            The data returned are less than or equal to this value, in RFC339 
+            format normalized to UTC.
+          schema:
+            type: string
+            format: date-time
+          example: 2018-06-04T13:02:44.000Z
+      responses:
+        '200':
+          description: Historical device data per device specified in the request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  devices:
+                    type: object
+                    properties:
+                      id:
+                        $ref: '#/components/schemas/DeviceDatas'
+              example:
+                devices:
+                  5ce86079-0025-4b57-85ca-efed02a1e16a:
+                    - eventTimestamp: 2018-06-08T15:47:31.000Z
+                      long: 67.933218
+                      lat: 23.114694
+                      raw: A3C492F8F3894AD
+                    - eventTimestamp: 2018-06-08T15:48:31.000Z
+                      long: 67.883719
+                      lat: 24.114694
+                      raw: A5D492E0F389BC4
+                  5ce86079-0025-4b57-85ca-efed02a1e16b:
+                    - eventTimestamp: 2018-06-08T15:47:31.000Z
+                      imu: data (TBD)
+                      raw: B56692C23389E0F
+                    - eventTimestamp: 2018-06-08T15:48:31.000Z
+                      imu: data (TBD)
+                      raw: B89492E0F0E4AD5
+        '400':
+          description: 'Bad request, typically bad syntax in parameter specification.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 400
+                message: Invalid value \"true\" for parameter \"raw\".
+                cId: ryK8c4aR2
+        '401':
+          description: The JWT token is not valid or expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 401
+                message: Invalid credentials.
+                cId: ryK8c4aR2
+        '404':
+          description: At least 1 of the specified deviceIds do not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                single:
+                  code: 404
+                  message: 'Body validation error(s): "1" must be a valid GUID'
+                  cId: ryL8vdaQQ
+                multiple:
+                  code: 404
+                  message: 'Body validation error(s): "0" must be a valid GUID and "1" must be a valid GUID and "deviceIds" does not contain 1 required value(s)'
+                  cId: ryK8c4aR2
+  '/devices/publish/ids':
+    post:
+      summary: Publish a data packet to device(s) by device IDs.
+      description: >-
+        Publish a data packet to device(s) by device IDs.  This method is limited by the number of device IDs as imposed by the maximum URL length of 2000 characters.
+      operationId: devicesPublish
+      requestBody:
+        description: Hex representation of data packet to publish to device(s).
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceIds:
+                  type: array
+                  description: List of device IDs.
+                  items:
+                    type: string
+                    format: uuid
+                    minimum: 1
+                data:
+                  type: string
+                  description: Hex representation of data packet to publish to device(s).
+            example:
+              deviceIds: [5ce86079-0025-4b57-85ca-efed02a1e16a, 5ce86079-0025-4b57-85ca-efed02a1e16b]
+              data: A8F3B297C2
+      responses:
+        '200':
+          description: >-
+            The server accepted the request to publish.  A transaction ID is returned, which can be used to retrieve the status of the publish request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                    format: uuid
+                    description: A transaction ID, used for retrieving the status of the publish request.
+              example:
+                transactionId: 5ce86079-0025-4b57-85ca-efed02a1e16a
+        '400':
+          description: 'Bad request, typically bad syntax in body specification.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 400
+                message: 'Body validation error(s): "data" is required'
+                cId: ryK8c4aR2
+        '401':
+          description: The JWT token is not valid or expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 401
+                message: Invalid credentials.
+                cId: ryK8c4aR2
+        '404':
+          description: At least 1 of the specified deviceIds do not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 404
+                message: Device(s) 5ce86079-0025-4b57-85ca-efed02a1e16a, 5ce86079-0025-4b57-85ca-efed02a1e16b does not exist.
+                cId: ryK8c4aR2
+  '/devices/publish/status/{transactionId}':
+    get:
+      summary: Retrieve the statuses of a published data packet to device(s).
+      description: 'Retrieve the statuses of a published data packet to device(s).  A status is given for each device within the specificied transaction.'
+      operationId: devicesPublishStatus
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: The `transactionId` of a publish data packet invocation.
+          schema:
+            type: object
+      responses:
+        '200':
+          description: The publish status for each device.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status :
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: The status of publish for this device.
+              example:
+                status:
+                  5ce86079-0025-4b57-85ca-efed02a1e16a: Done
+                  5ce86079-0025-4b57-85ca-efed02a1e16b: Pending
+        '401':
+          description: The JWT token is not valid or expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 401
+                message: Invalid credentials.
+                cId: ryK8c4aR2
+        '404':
+          description: The `transactionId` doesn\'t exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                  code: 404
+                  message: 'Transaction e848ac5e-7374-453a-ad8d-0b7a37147e92 does not exist.'
+                  cId: ryL8vdaQQ
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Response/error code.
+        message:
+          type: string
+          description: \"Nice\" description of results.
+        cId:
+          type: string
+          description: Internal correlation ID for investigative purposes.
+    DeviceData:
+      required:
+        - eventTimestamp
+      properties:
+        eventTimestamp:
+          type: string
+          format: date-time
+        raw:
+          type: string
+        long:
+          type: number
+          format: float
+        lat:
+          type: number
+          format: float
+        velocity:
+          type: number
+          format: float
+    DeviceDatas:
+      type: array
+      items:
+        $ref: '#/components/schemas/DeviceData'

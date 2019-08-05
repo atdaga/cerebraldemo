@@ -1,0 +1,30 @@
+image: node:carbon
+
+stages:
+  - build
+  - test
+#  - deploy
+
+build:
+  stage: build
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - node_modules/
+      - dist/
+  only:
+    - develop
+    - master
+
+
+test:
+  stage: test
+  script:
+    - npm run lint
+    - npm run coverage
+  only:
+    - develop
+    - master
+
